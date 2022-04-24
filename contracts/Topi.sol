@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.4;
-
+/**
+ * @custom:dev-run-script ./scripts/deploy_with_ethers.ts
+ */
+pragma solidity ^0.8.1;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
-contract MyToken is ERC721 {
+contract Topi is ERC721 {
     event nftBought(address, uint256);
     uint8 constant tokenId = 0;
     string baseURI;
@@ -17,25 +19,26 @@ contract MyToken is ERC721 {
     mapping(uint256 => ownerDetail) allOwners;
 
     constructor(string memory _baseUri, uint256 _tokenId)
-        ERC721("MyToken", "MTK")
+        payable
+        ERC721("Topi", "TOPI")
     {
         owner = payable(msg.sender);
         baseURI = _baseUri;
         _safeMint(msg.sender, _tokenId);
         ownerCounter = 0;
-        currentPrice = 1;
+        currentPrice = 1000000000000000000;
         updateOwners(ownerDetail(msg.sender, block.timestamp));
     }
 
     function _safeMint(address to, uint256 _tokenId) internal virtual override {
-        _safeMint(to, tokenId, "");
+        _safeMint(to, _tokenId, "");
     }
 
     function _baseURI() internal view virtual override returns (string memory) {
         return baseURI;
     }
 
-    function isBuyable() private returns (bool) {
+    function isBuyable() private view returns (bool) {
         uint256 startDate = getLastTransactionTimeStamp();
         uint256 timePassed = (block.timestamp - startDate) / 60;
         if (timePassed > 15) {
@@ -45,11 +48,15 @@ contract MyToken is ERC721 {
         }
     }
 
-    function getLastOwnerAddress() private returns (address) {
+    function getLastOwnerAddress() private view returns (address) {
         return allOwners[ownerCounter].addressOfOwner;
     }
 
-    function getLastTransactionTimeStamp() private returns (uint256 timeStamp) {
+    function getLastTransactionTimeStamp()
+        private
+        view
+        returns (uint256 timeStamp)
+    {
         return allOwners[ownerCounter].timeStamp;
     }
 
@@ -58,13 +65,13 @@ contract MyToken is ERC721 {
         ownerCounter += 1;
     }
 
-    function buyNft() public payable virtual {
+    function buyNft(uint256 amount) public payable virtual {
         require(
             isBuyable(),
             "ERC721: 15 min has not been passed from last transaction"
         );
         require(
-            msg.value == currentPrice,
+            amount == currentPrice,
             "Ether sent should be equal to current Price"
         );
         _transfer(getLastOwnerAddress(), payable(msg.sender), tokenId);

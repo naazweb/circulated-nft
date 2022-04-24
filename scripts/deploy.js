@@ -3,13 +3,13 @@ const hre = require("hardhat");
 async function main() {
   const [deployer] = await hre.ethers.getSigners();
 
-  const contractName = await hre.ethers.getContractFactory("Topi");
-  const faucet = await contractName.deploy();
+  const TopiContract = await hre.ethers.getContractFactory("Topi");
+  // TODO: IPFS - get URI
+  const topi = await TopiContract.deploy("some_uri", 0, { gasLimit: 12450000 });
+  await topi.deployed();
+  console.log(`Topi deployed to address: ${topi.address}`);
 
-  await faucet.deployed();
-  console.log(`Topi deployed to address: ${faucet.address}`);
-
-  saveFrontendFiles(faucet);
+  saveFrontendFiles(topi);
 }
 
 function saveFrontendFiles(contract) {
@@ -22,14 +22,14 @@ function saveFrontendFiles(contract) {
 
   fs.writeFileSync(
     contractsDir + "/contract-address.json",
-    JSON.stringify({ FaucetContractAddr: contract.address }, undefined, 2)
+    JSON.stringify({ TopiContractAddr: contract.address }, undefined, 2)
   );
 
-  const FaucetArtifact = artifacts.readArtifactSync("Topi");
+  const TopiArtifact = artifacts.readArtifactSync("Topi");
 
   fs.writeFileSync(
     contractsDir + "/Topi.json",
-    JSON.stringify(FaucetArtifact, null, 2)
+    JSON.stringify(TopiArtifact, null, 2)
   );
 }
 
