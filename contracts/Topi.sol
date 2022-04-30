@@ -12,11 +12,13 @@ contract Topi is ERC721 {
     address payable owner;
     uint256 ownerCounter;
     uint256 currentPrice;
+    address currentOwner;
     struct ownerDetail {
         address addressOfOwner;
         uint256 timeStamp;
     }
     mapping(uint256 => ownerDetail) allOwners;
+    ownerDetail[] all_owners;
 
     constructor(string memory _baseUri, uint256 _tokenId)
         payable
@@ -26,6 +28,7 @@ contract Topi is ERC721 {
         baseURI = _baseUri;
         _safeMint(msg.sender, _tokenId);
         ownerCounter = 0;
+        currentOwner = msg.sender;
         currentPrice = 1000000000000000000;
         updateOwners(ownerDetail(msg.sender, block.timestamp));
     }
@@ -41,7 +44,7 @@ contract Topi is ERC721 {
     function isBuyable() private view returns (bool) {
         uint256 startDate = getLastTransactionTimeStamp();
         uint256 timePassed = (block.timestamp - startDate) / 60;
-        if (timePassed > 15) {
+        if (timePassed > 2) {
             return true;
         } else {
             return false;
@@ -60,22 +63,28 @@ contract Topi is ERC721 {
         return allOwners[ownerCounter].timeStamp;
     }
 
+    function getAllOwners() public view returns (ownerDetail[] memory) {
+        return all_owners;
+    }
+
     function updateOwners(ownerDetail memory newOwnerDetail) private {
         allOwners[ownerCounter + 1] = newOwnerDetail;
+        all_owners.push(newOwnerDetail);
         ownerCounter += 1;
     }
 
-    function buyNft(uint256 amount) public payable virtual {
+    function buyNft() public payable virtual {
+        // require(
+        //     isBuyable(),
+        //     "ERC721: 2 min has not been passed from last transaction"
+        // );
         require(
-            isBuyable(),
-            "ERC721: 15 min has not been passed from last transaction"
-        );
-        require(
-            amount == currentPrice,
+            msg.value == currentPrice,
             "Ether sent should be equal to current Price"
         );
-        _transfer(getLastOwnerAddress(), payable(msg.sender), tokenId);
+        _transfer(currentOwner, payable(msg.sender), tokenId);
         updateOwners(ownerDetail(msg.sender, block.timestamp));
+        currentOwner = msg.sender;
         ownerCounter += 1;
         uint256 newPrice = ((10 * currentPrice) / 100) + currentPrice;
         owner.transfer(newPrice - currentPrice);
