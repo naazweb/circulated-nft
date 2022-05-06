@@ -10,14 +10,11 @@ contract Topi is ERC721 {
     uint8 constant tokenId = 0;
     string baseURI;
     address payable owner;
-    uint256 ownerCounter;
     uint256 currentPrice;
-    address currentOwner;
     struct ownerDetail {
         address addressOfOwner;
         uint256 timeStamp;
     }
-    mapping(uint256 => ownerDetail) allOwners;
     ownerDetail[] all_owners;
 
     constructor(string memory _baseUri, uint256 _tokenId)
@@ -27,8 +24,6 @@ contract Topi is ERC721 {
         owner = payable(msg.sender);
         baseURI = _baseUri;
         _safeMint(msg.sender, _tokenId);
-        ownerCounter = 0;
-        currentOwner = msg.sender;
         currentPrice = 1000000000000000000;
         updateOwners(ownerDetail(msg.sender, block.timestamp));
     }
@@ -52,7 +47,7 @@ contract Topi is ERC721 {
     }
 
     function getLastOwnerAddress() private view returns (address) {
-        return allOwners[ownerCounter].addressOfOwner;
+        return all_owners[all_owners.length - 1].addressOfOwner;
     }
 
     function getLastTransactionTimeStamp()
@@ -60,7 +55,7 @@ contract Topi is ERC721 {
         view
         returns (uint256 timeStamp)
     {
-        return allOwners[ownerCounter].timeStamp;
+        return all_owners[all_owners.length - 1].timeStamp;
     }
 
     function getAllOwners() public view returns (ownerDetail[] memory) {
@@ -68,35 +63,28 @@ contract Topi is ERC721 {
     }
 
     function updateOwners(ownerDetail memory newOwnerDetail) private {
-        allOwners[ownerCounter + 1] = newOwnerDetail;
         all_owners.push(newOwnerDetail);
-        ownerCounter += 1;
     }
 
     function buyNft() public payable virtual {
-        // require(
-        //     isBuyable(),
-        //     "ERC721: 2 min has not been passed from last transaction"
-        // );
+        require(
+            isBuyable(),
+            "ERC721: 2 min has not been passed from last transaction"
+        );
         require(
             msg.value == currentPrice,
             "Ether sent should be equal to current Price"
         );
-        _transfer(currentOwner, payable(msg.sender), tokenId);
+        _transfer(msg.sender, payable(msg.sender), tokenId);
         updateOwners(ownerDetail(msg.sender, block.timestamp));
-        currentOwner = msg.sender;
-        ownerCounter += 1;
         uint256 newPrice = ((10 * currentPrice) / 100) + currentPrice;
         owner.transfer(newPrice - currentPrice);
         currentPrice = newPrice;
         emit nftBought(msg.sender, msg.value);
     }
 
-    function getCurrentOwner() public view returns (address, uint256) {
-        return (
-            allOwners[ownerCounter].addressOfOwner,
-            allOwners[ownerCounter].timeStamp
-        );
+    function getCurrentOwner() public view returns (ownerDetail memory) {
+        return all_owners[all_owners.length - 1];
     }
 
     function getCurrentPrice() public view returns (uint256) {

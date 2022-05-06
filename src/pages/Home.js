@@ -3,13 +3,16 @@ import {buyNFT, getAllOwners, getCurrentPrice} from "../utils/utility"
 import {checkIfWalletIsConnected, connectWallet } from "../utils/common"
 import Topi from "../abis/Topi.json";
 import TopiContract from "../abis/contract-address.json";
+import { ethers } from "ethers";
 
 function Home() {
 
 	const [currentAccount, setCurrentAccount] = useState(localStorage.getItem("currentAccount"));
 	const [currentPrice, setCurrentPrice] = useState(0);
+	const [allOwners, setAllOwners] = useState([]);
 
 	const isMetamaskConnected = !!currentAccount;
+
 
 	useEffect(() => {
 		checkIfWalletIsConnected(setCurrentAccount);
@@ -19,10 +22,12 @@ function Home() {
 			setCurrentPrice(res)
 
 		})
-		// getAllOwners(
-		// 	TopiContract.TopiContractAddr,
-		// 	Topi.abi
-		// )
+		getAllOwners(
+			TopiContract.TopiContractAddr,
+			Topi.abi
+		).then((res)=>{
+			setAllOwners(res);
+		})
 	}, []);
 
 	async function handleBuyNFT() {
@@ -46,7 +51,9 @@ function Home() {
 			getAllOwners(
 				TopiContract.TopiContractAddr,
 				Topi.abi
-			)
+			).then((res)=>{
+				setAllOwners(res);
+			})
 		}
 	}
 
@@ -60,6 +67,11 @@ function Home() {
 					{currentPrice} Eth</div>
 				<button style={{width:"800px", fontSize:"25px"}} onClick={() => handleBuyNFT()}
 				title="BUY NOW">{isMetamaskConnected ? "BUY NOW":"Connect Wallet"}</button>
+		</div>
+		<div>
+			{allOwners.length > 0 && allOwners.map((owner)=>{
+				return (<p key={allOwners.indexOf(owner)}>Address: {owner[0]}<br /> Timestamp: {ethers.utils.formatEther(owner[1]) * (10**18)}</p>)
+			})}
 		</div>
 	</div>
 	);

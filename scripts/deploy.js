@@ -5,7 +5,7 @@ async function main() {
 
   const TopiContract = await hre.ethers.getContractFactory("Topi");
   // TODO: IPFS - get URI
-  const topi = await TopiContract.deploy("some_uri", 0, { gasLimit: 124500000 });
+  const topi = await TopiContract.deploy("some_uri", 0);
   await topi.deployed();
   console.log(`Topi deployed to address: ${topi.address}`);
 
