@@ -20,6 +20,9 @@ if (NETWORK == TEST_NETWORK) {
 		rinkeby: {
 			url: `https://eth-rinkeby.alchemyapi.io/v2/${ALCHEMY_API_KEY}`,
 			accounts: [`0x${WALLET_PRIVATE_KEY}`],
+			chainId:4,
+			gas: 2100000,
+			gasPrice: 8000000000
 		},
 	};
 }

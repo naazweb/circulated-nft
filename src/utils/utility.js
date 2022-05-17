@@ -26,7 +26,7 @@ export async function getCurrentPrice(contractAddr, artifact) {
 
 		const topiContract = getSignedContract(contractAddr, artifact);
 		try {
-			let transaction = await topiContract.getCurrentPrice();
+			let transaction = await topiContract.getCurrentPrice({gasLimit:12400500 });
 			return transaction/(10**18)
 		} catch (err) {
 			console.log(err);
@@ -40,7 +40,7 @@ export async function getAllOwners(contractAddr, artifact) {
 
 		const topiContract = getSignedContract(contractAddr, artifact);
 		try {
-			let transaction = await topiContract.getAllOwners();
+			let transaction = await topiContract.getAllOwners({gasLimit:12450000});
 			return transaction
 		} catch (err) {
 			console.log(err);
