@@ -5,8 +5,13 @@ async function main() {
 
   const TopiContract = await hre.ethers.getContractFactory("Topi");
   // TODO: IPFS - get URI
-  const topi = await TopiContract.deploy("some_uri", 0);
+  // const topi = await TopiContract.deploy("some_uri", 0);
+  const topi = await TopiContract.deploy(
+    "https://ipfs.io/ipfs/QmbwuizkDS1CEqXRJMQCdcTZqfDFrJqVQewQv1qFaJs5G4/",
+    1
+  );
   await topi.deployed();
+  console.log(topi);
   console.log(`Topi deployed to address: ${topi.address}`);
 
   saveFrontendFiles(topi);

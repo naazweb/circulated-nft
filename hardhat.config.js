@@ -13,18 +13,20 @@ const NETWORK = TEST_NETWORK;
 
 let networks = {};
 if (NETWORK == TEST_NETWORK) {
-	const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
-	const WALLET_PRIVATE_KEY = process.env.WALLET_PRIVATE_KEY;
+  const ALCHEMY_API_KEY = process.env.ALCHEMY_API_KEY;
+  const WALLET_PRIVATE_KEY = process.env.WALLET_PRIVATE_KEY;
 
-	networks = {
-		rinkeby: {
-			url: `https://eth-rinkeby.alchemyapi.io/v2/${ALCHEMY_API_KEY}`,
-			accounts: [`0x${WALLET_PRIVATE_KEY}`],
-		},
-	};
+  networks = {
+    rinkeby: {
+      url: `https://eth-rinkeby.alchemyapi.io/v2/${ALCHEMY_API_KEY}`,
+      accounts: [`0x${WALLET_PRIVATE_KEY}`],
+      gas: 2200000,
+      gasPrice: 8000000000,
+    },
+  };
 }
 
 module.exports = {
-	solidity: "0.8.1",
-	networks: networks,
+  solidity: "0.8.1",
+  networks: networks,
 };
