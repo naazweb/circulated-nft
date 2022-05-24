@@ -5,6 +5,11 @@ const pinataSecretApiKey = process.env.PINATA_API_SECRET;
 const axios = require("axios");
 const fs = require("fs");
 const FormData = require("form-data");
+'use strict';
+
+
+
+
 const pinFileToIPFS = async () => {
   const url = `https://api.pinata.cloud/pinning/pinFileToIPFS`;
   let data = new FormData();
@@ -19,20 +24,36 @@ const pinFileToIPFS = async () => {
   });
   console.log(res.data);
   const metadata = {
-    "name":"Topi",
     "image": "https://ipfs.io/ipfs/"+res.data.IpfsHash, 
-    "description": "Aamir and Naazneen"
+    "description": "First NFT Ever By Aiolos Team", 
+  "external_url": "https://www.aiolos.solutions/", 
+  "type":"image", 
+  "name": "Topi",
+  "attributes": [ {
+    "creator" : "Aamir Shaikh"
+  },{
+    "creator" : "Nazneen probably shaikh"
+  }  ]
   }
 
-  const meta_res = await axios.post(`https://api.pinata.cloud/pinning/pinJSONToIPFS`, metadata, {
+    
+let metadata_json = JSON.stringify(metadata);
+fs.writeFileSync('./public/metadata.json', metadata_json);
+  let metadata_data = new FormData();
+  metadata_data.append("file", fs.createReadStream("./public/metadata.json"), {filepath:"any-directory/1"});
+
+
+  const meta_res = await axios.post(url, metadata_data, {
     maxContentLength: "Infinity", 
     headers: {
+      "Content-Type": `multipart/form-data; boundary=${data._boundary}`,
+
       pinata_api_key: pinataApiKey, 
       pinata_secret_api_key: pinataSecretApiKey,
     },
   });
   console.log(meta_res.data)
-  return "https://ipfs.io/ipfs/"+meta_res.data.IpfsHash
+  return "https://ipfs.io/ipfs/"+meta_res.data.IpfsHash+"/"
 };
 
 
@@ -41,17 +62,15 @@ async function main() {
   const uri = await pinFileToIPFS();
 
   const TopiContract = await hre.ethers.getContractFactory("Topi");
-  // TODO: IPFS - get URI
-  // const topi = await TopiContract.deploy("some_uri", 0);
   // const topi = await TopiContract.deploy(
   //   "https://ipfs.io/ipfs/QmbwuizkDS1CEqXRJMQCdcTZqfDFrJqVQewQv1qFaJs5G4/",
   //   1
   // );
   console.log("deploying", uri)
-  const topi = await TopiContract.deploy(uri, 0);
+  const topi = await TopiContract.deploy(uri, 1);
   console.log("topi", topi.address)
   await topi.deployed();
-  console.log(topi);
+  // console.log(topi);
   console.log(`Topi deployed to address: ${topi.address}`);
 
   saveFrontendFiles(topi);

@@ -21,11 +21,12 @@ export const checkIfWalletIsConnected = async (setCurrentAccount) => {
         const { ethereum } = window;
 
         if (!ethereum) {
-            console.log("Make sure you have metamask!");
+            alert("Make sure you have metamask!");
             return;
-        } else {
-            console.log("We have the ethereum object", ethereum);
-        }
+        } 
+        // else {
+        //     console.log("We have the ethereum object", ethereum);
+        // }
 
         const accounts = await ethereum.request({ method: 'eth_accounts' });
 
@@ -44,7 +45,7 @@ export const connectWallet = async (setCurrentAccount) => {
         const { ethereum } = window;
 
         if (!ethereum) {
-            alert("Get MetaMask!");
+            alert("Make sure you have metamask!");
             return;
         }
 

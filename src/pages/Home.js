@@ -11,13 +11,13 @@ function Home() {
   );
   const [currentPrice, setCurrentPrice] = useState(0);
   const [allOwners, setAllOwners] = useState([]);
-
+  const contractAddress = TopiContract.TopiContractAddr;
   const isMetamaskConnected = !!currentAccount;
 
   useEffect(() => {
     checkIfWalletIsConnected(setCurrentAccount);
     getCurrentPrice(TopiContract.TopiContractAddr, Topi.abi).then((res) => {
-      console.log("currentPrice", res);
+      // console.log("currentPrice", res);
       setCurrentPrice(res);
     });
     getAllOwners(TopiContract.TopiContractAddr, Topi.abi).then((res) => {
@@ -47,17 +47,20 @@ function Home() {
   }
 
   return (
+    <>   <h1 style={{textAlign:"center", fontSize: "35px", color: "MenuText", padding: "20px" }}>
+    Circulated NFT
+  </h1>
     <div
       style={{
         display: "flex",
-        flexDirection: "column",
+        flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
       }}
     >
-      <label style={{ fontSize: "35px", color: "MenuText", padding: "20px" }}>
-        Circulated NFT
-      </label>
+   
+      <div>
+      
       <div
         style={{
           border: "8px",
@@ -79,7 +82,11 @@ function Home() {
           {isMetamaskConnected ? "BUY NOW" : "Connect Wallet"}
         </button>
       </div>
-      <div>
+      <a target="_blank" href={`https://testnets.opensea.io/assets/rinkeby/${contractAddress}/1`}>View on OpenSea</a>
+      </div>
+      <div style={{align:"self"}}>
+      <h2>Owners</h2>
+      <div style={{backgroundColor:"#d0d0d0", padding:20}}>
         {allOwners.length > 0 &&
           allOwners.map((owner) => {
             return (
@@ -87,11 +94,14 @@ function Home() {
                 Address: {owner[0]}
                 <br /> Timestamp:{" "}
                 {ethers.utils.formatEther(owner[1]) * 10 ** 18}
+                <hr />
               </p>
             );
           })}
       </div>
+      </div>
     </div>
+    </>
   );
 }
 export default Home;

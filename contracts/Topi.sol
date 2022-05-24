@@ -25,14 +25,14 @@ contract Topi is ERC721 {
         owner = payable(msg.sender);
         baseURI = _baseUri;
         _safeMint(msg.sender, _tokenId);
-        _setTokenURI(_tokenId, baseURI);
+        // _setTokenURI(_tokenId, baseURI);
         currentPrice = 1000000000000000000;
         updateOwners(ownerDetail(msg.sender, block.timestamp));
     }
 
-    function _setTokenURI(uint256 token_Id, string memory _tokenURI) internal {
-        _tokenURIs[token_Id] = _tokenURI;
-    }
+    // function _setTokenURI(uint256 token_Id, string memory _tokenURI) internal {
+    //     _tokenURIs[token_Id] = _tokenURI;
+    // }
 
     function _safeMint(address to, uint256 _tokenId) internal virtual override {
         _safeMint(to, _tokenId, "");

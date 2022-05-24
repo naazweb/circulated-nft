@@ -25,9 +25,9 @@ export async function getCurrentPrice(contractAddr, artifact) {
 
   const topiContract = getSignedContract(contractAddr, artifact);
   try {
-    console.log(topiContract);
-    let transaction = await topiContract.getCurrentPrice({ gasLimit: 22000 });
-    console.log("Transaction", transaction);
+    // console.log(topiContract);
+    let transaction = await topiContract.getCurrentPrice();
+    // console.log("Transaction", transaction);
     return transaction / 10 ** 18;
   } catch (err) {
     console.log(err);
