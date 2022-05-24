@@ -16,6 +16,7 @@ contract Topi is ERC721 {
         uint256 timeStamp;
     }
     ownerDetail[] all_owners;
+    mapping(uint256 => string) _tokenURIs;
 
     constructor(string memory _baseUri, uint256 _tokenId)
         payable
@@ -24,8 +25,13 @@ contract Topi is ERC721 {
         owner = payable(msg.sender);
         baseURI = _baseUri;
         _safeMint(msg.sender, _tokenId);
+        _setTokenURI(_tokenId, baseURI);
         currentPrice = 1000000000000000000;
         updateOwners(ownerDetail(msg.sender, block.timestamp));
+    }
+
+    function _setTokenURI(uint256 token_Id, string memory _tokenURI) internal {
+        _tokenURIs[token_Id] = _tokenURI;
     }
 
     function _safeMint(address to, uint256 _tokenId) internal virtual override {
@@ -38,8 +44,8 @@ contract Topi is ERC721 {
 
     function isBuyable() private view returns (bool) {
         uint256 startDate = getLastTransactionTimeStamp();
-        uint256 timePassed = (block.timestamp - startDate) / 60;
-        if (timePassed > 2) {
+        uint256 timePassed = (block.timestamp - startDate) / 30;
+        if (timePassed > 1) {
             return true;
         } else {
             return false;
@@ -69,13 +75,17 @@ contract Topi is ERC721 {
     function buyNft() public payable virtual {
         require(
             isBuyable(),
-            "ERC721: 2 min has not been passed from last transaction"
+            "ERC721: 30 seconds has not been passed from last transaction"
         );
         require(
             msg.value == currentPrice,
             "Ether sent should be equal to current Price"
         );
-        _transfer(msg.sender, payable(msg.sender), tokenId);
+        _transfer(
+            all_owners[all_owners.length - 1].addressOfOwner,
+            payable(msg.sender),
+            tokenId
+        );
         updateOwners(ownerDetail(msg.sender, block.timestamp));
         uint256 newPrice = ((10 * currentPrice) / 100) + currentPrice;
         owner.transfer(newPrice - currentPrice);
