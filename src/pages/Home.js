@@ -19,12 +19,13 @@ function Home() {
     getCurrentPrice(TopiContract.TopiContractAddr, Topi.abi).then((res) => {
       // console.log("currentPrice", res);
       setCurrentPrice(res);
+      getAllOwners(TopiContract.TopiContractAddr, Topi.abi).then((res) => {
+        if (res) {
+          setAllOwners(res);
+        }
+      });
     });
-    getAllOwners(TopiContract.TopiContractAddr, Topi.abi).then((res) => {
-      if (res) {
-        setAllOwners(res);
-      }
-    });
+    
   }, []);
 
   async function handleBuyNFT() {
@@ -84,7 +85,7 @@ function Home() {
       </div>
       <a target="_blank" href={`https://testnets.opensea.io/assets/rinkeby/${contractAddress}/1`}>View on OpenSea</a>
       </div>
-      <div style={{align:"self"}}>
+      <div style={{align:"self",overflowY:"scroll", height:520, padding:5}}>
       <h2>Owners</h2>
       <div style={{backgroundColor:"#d0d0d0", padding:20}}>
         {allOwners.length > 0 &&
@@ -98,8 +99,14 @@ function Home() {
               </p>
             );
           })}
+          
       </div>
       </div>
+      
+    </div>
+    <div style={{paddingLeft:"50%", backgroundColor:"#ffffff", color:"#979191"}}>
+    <p style={{paddingTop:10, position:"absolute", bottom:0}}>Thanks! 😊</p>
+
     </div>
     </>
   );

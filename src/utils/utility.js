@@ -15,8 +15,13 @@ export async function buyNFT(contractAddr, artifact, amount) {
       let receipt = await transaction.wait();
       console.log(receipt);
     } catch (err) {
-      console.log(err);
-    }
+      if (err.code === "INSUFFICIENT_FUNDS"){
+        alert("You don't have sufficient balance. Please get Rinkeby Eth.")
+      }
+      else{
+        alert("30 Seconds has not passed since last transaction. Please wait.")
+      }
+  }
   }
 }
 
